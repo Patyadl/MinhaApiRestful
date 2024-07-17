@@ -1,4 +1,3 @@
-
 import { Router } from 'express';
 import pg from 'pg';
 import { validationResult } from 'express-validator';
@@ -9,14 +8,17 @@ const pool = new pg.Pool({
 
 const produtosRoutes = Router();
 
+
 produtosRoutes.post('/', (req, res) => {
   const { nome, descricao, preco, dataDeCriacao } = req.body;
 
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ error: errors.array() });
-  }
+  console.log('Recebido novo produto:', req.body)
 
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) {
+    console.log('Erro de validação:', errors.array())
+    return res.status(400).json({ error: errors.array() })
+  }
   pool.query(
     'INSERT INTO produtos (nome, descricao, preco, dataDeCriacao) VALUES ($1, $2, $3, $4)',
     [nome, descricao, preco, dataDeCriacao],
@@ -25,10 +27,10 @@ produtosRoutes.post('/', (req, res) => {
         console.error("Erro ao inserir produto:", error)
         res.status(500).json({ error: "Erro ao inserir produto." })
       } else {
-        res.json({ message: 'Produto criado com sucesso!' });
+        res.json({ message: 'Produto criado com sucesso!' })
       }
     }
-  );
+  )
 });
 
 produtosRoutes.get('/', (req, res) => {
@@ -42,36 +44,36 @@ produtosRoutes.get('/', (req, res) => {
   });
 });
 
-produtosRoutes.get('/produtos/:id', async (req, res) => {
+produtosRoutes.get('/:id', async (req, res) => { 
   try {
-    const id = req.params.id
-    console.log("Buscando produto com id:", id); 
+    const id = req.params.id;
+    console.log("Buscando produto com id:", id);
     const result = await pool.query('SELECT * FROM produtos WHERE id = $1', [id]);
 
     if (result.rows.length > 0) {
-      console.log("Produto encontrado:", result.rows[0])
-      res.json(result.rows[0])
+      console.log("Produto encontrado:", result.rows[0]);
+      res.json(result.rows[0]);
     } else {
-      console.log("Produto com id não encontrado:", id)
-      res.status(404).send({ error: "Id não encontrado." })
+      console.log("Produto com id não encontrado:", id);
+      res.status(404).send({ error: "Id não encontrado." });
     }
   } catch (error) {
     console.error("Erro ao retornar o id:", error);
-    res.status(500).send({ error: "Erro ao retornar o id." })
+    res.status(500).send({ error: "Erro ao retornar o id." });
   }
 });
 
-produtosRoutes.put('/produtos/:id', async (req, res) => {
+produtosRoutes.put('/:id', async (req, res) => { 
   const { nome, descricao, preco, dataDeCriacao } = req.body;
   const id = req.params.id;
 
   try {
-    console.log("Atualizando produto com id:", id); 
+    console.log("Atualizando produto com id:", id);
     const result = await pool.query('SELECT * FROM produtos WHERE id = $1', [id]);
 
     if (result.rows.length === 0) {
-      console.log("Produto com id não encontrado para atualização:", id)
-      return res.status(404).json({ error: "Id não encontrado." })
+      console.log("Produto com id não encontrado para atualização:", id);
+      return res.status(404).json({ error: "Id não encontrado." });
     }
 
     await pool.query(
@@ -81,22 +83,22 @@ produtosRoutes.put('/produtos/:id', async (req, res) => {
 
     res.json({ message: 'Produto atualizado com sucesso!' });
   } catch (error) {
-    console.error("Erro ao atualizar produto:", error)
+    console.error("Erro ao atualizar produto:", error);
     res.status(500).json({ error: "Erro ao atualizar produto." });
   }
 });
 
-produtosRoutes.delete('/produtos/:id', async (req, res) => {
+produtosRoutes.delete('/:id', async (req, res) => { 
   try {
     const id = req.params.id;
-    console.log("Deletando produto com id:", id); 
+    console.log("Deletando produto com id:", id);
     const result = await pool.query('DELETE FROM produtos WHERE id = $1 RETURNING *', [id]);
 
     if (result.rowCount > 0) {
-      console.log("Produto excluído com sucesso:", id); 
+      console.log("Produto excluído com sucesso:", id);
       res.json({ message: 'Produto excluído com sucesso!' });
     } else {
-      console.log("Produto com id não encontrado para exclusão:", id); 
+      console.log("Produto com id não encontrado para exclusão:", id);
       res.status(404).send({ error: "Id não encontrado." });
     }
   } catch (error) {
@@ -105,4 +107,4 @@ produtosRoutes.delete('/produtos/:id', async (req, res) => {
   }
 });
 
-export { produtosRoutes }
+export { produtosRoutes };
