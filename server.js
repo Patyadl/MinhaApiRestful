@@ -1,3 +1,4 @@
+
 import express from 'express'
 import { routes } from "./routes/index.js"
 import pg from 'pg';
@@ -40,8 +41,8 @@ server.post('/dados', (req, res) => {
   })
 })
 
-
 const port = 3000
 server.listen(port, () => {
   console.log(`Servidor está rodando na porta ${port}`)})
+
 export {server}
