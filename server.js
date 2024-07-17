@@ -29,18 +29,6 @@ pool.query(`
 })
 
 
-server.post('/dados', (req, res) => {
-  const { nome, descricao, preco, dataDeCriacao} = req.body
-  
-  pool.query('INSERT INTO dados (nome, descricao, preco,dataDeCriacao) VALUES ($1, $2, $3, $4)', [nome,descricao, preco, dataDeCriacao], (error, results) => {
-    if (error) {
-      throw error;
-    }
-    console.log('Dados inseridos com sucesso!')
-    res.redirect('/')
-  })
-})
-
 const port = 3000
 server.listen(port, () => {
   console.log(`Servidor está rodando na porta ${port}`)})
